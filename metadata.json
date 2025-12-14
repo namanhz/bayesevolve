@@ -1,0 +1,5 @@
+{
+  "name": "BayesEvolve",
+  "description": "An interactive educational narrative exploring the history and mechanics of Bayesian computation, from analytical conjugate priors to modern Hamiltonian Monte Carlo.",
+  "requestFramePermissions": []
+}
