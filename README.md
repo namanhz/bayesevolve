@@ -680,6 +680,10 @@ MIT License
 - **Stan Development Team** for pedagogical materials on HMC
 - **David Blei** for foundational work on variational inference
 
+### Development Note
+
+The mathematical logic and algorithms (MCMC, HMC steps) were designed and verified based on the course material. The web interface and visualization components were implemented with the assistance of AI coding tools to ensure high-performance rendering on the browser.
+
 ---
 
 *Last Updated: December 2025*

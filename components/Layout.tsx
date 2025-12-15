@@ -67,6 +67,9 @@ const Layout: React.FC<LayoutProps> = ({ currentModule, onModuleChange, children
            <p className="text-xs text-[#6b6560] leading-relaxed italic">
              {t('footer')}
            </p>
+           <p className="text-[10px] text-[#9a9590] leading-relaxed mt-2">
+             {t('footer_dev_note')}
+           </p>
         </div>
       </nav>
 
