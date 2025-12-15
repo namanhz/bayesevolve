@@ -1,7 +1,6 @@
 import React from 'react';
 import { ModuleType } from '../types';
-import { Home, BookOpen, Activity, Grid, Zap, Trophy, Sparkles, Globe } from 'lucide-react';
-import { useProgress } from '../contexts/ProgressContext';
+import { Home, BookOpen, Activity, Grid, Zap, Sparkles, Globe } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
 
 interface LayoutProps {
@@ -20,7 +19,6 @@ const navItems = [
 ];
 
 const Layout: React.FC<LayoutProps> = ({ currentModule, onModuleChange, children }) => {
-  const { achievements } = useProgress();
   const { language, setLanguage, t } = useLanguage();
 
   return (
@@ -65,24 +63,6 @@ const Layout: React.FC<LayoutProps> = ({ currentModule, onModuleChange, children
           })}
         </div>
         
-        {/* Achievements Section */}
-        <div className="border-t border-[#d4cdc4] pt-6">
-           <h3 className="text-xs font-bold text-[#6b6560] uppercase tracking-widest mb-4 flex items-center gap-2">
-             <Trophy size={14} /> {t('achievements')}
-           </h3>
-           <div className="space-y-3">
-             {achievements.map((ach) => (
-               <div key={ach.id} className={`flex items-center gap-3 p-2 rounded-lg border ${ach.unlocked ? 'border-[#8b7355] bg-[#f5f0e8]' : 'border-[#d4cdc4] bg-[#e8e4df] opacity-50'}`}>
-                 <div className="text-2xl">{ach.unlocked ? ach.icon : '🔒'}</div>
-                 <div>
-                   <div className={`text-sm font-bold ${ach.unlocked ? 'text-[#6b5640]' : 'text-[#9a9590]'}`}>{ach.title}</div>
-                   <div className="text-[10px] text-[#9a9590]">{ach.description}</div>
-                 </div>
-               </div>
-             ))}
-           </div>
-        </div>
-
         <div className="mt-auto pt-6 border-t border-[#d4cdc4]">
            <p className="text-xs text-[#6b6560] leading-relaxed italic">
              {t('footer')}
