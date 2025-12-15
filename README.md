@@ -682,7 +682,7 @@ MIT License
 
 ### Development Note
 
-The mathematical logic and algorithms (MCMC, HMC steps) were designed and verified based on the course material. The web interface and visualization components were implemented with the assistance of AI coding tools to ensure high-performance rendering on the browser.
+The mathematical logic and algorithms (MCMC, HMC) were synthesized from Prof. Kerrie Mengersen's lectures and independent research. The web interface and interactive visualizations were implemented with the assistance of AI coding tools.
 
 ---
 
