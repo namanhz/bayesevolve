@@ -9,9 +9,9 @@ import MathTex from './Math';
 const ENERGY_WIDTH = 250;
 const ENERGY_HEIGHT = 80;
 
-const WIDTH = 600;
-const HEIGHT = 500;
-const SCALE = 40;
+const WIDTH = 700;
+const HEIGHT = 600;
+const SCALE = 50;
 const CENTER_X = WIDTH / 2;
 const CENTER_Y = HEIGHT / 2;
 
@@ -54,7 +54,7 @@ const ModuleHMC: React.FC = () => {
   const particleRef = useRef(particle);
   
   // New state for improvements
-  const [dt, setDt] = useState(0.05); // Adjustable step size
+  const [dt, setDt] = useState(0.015); // Adjustable step size - very low for stability
   const [showGradient, setShowGradient] = useState(true);
   const [energyHistory, setEnergyHistory] = useState<{U: number, K: number, H: number}[]>([]);
   const [initialEnergy, setInitialEnergy] = useState<number | null>(null);
@@ -70,7 +70,7 @@ const ModuleHMC: React.FC = () => {
   const currentH = currentU + currentK;
   const energyDrift = initialEnergy !== null ? Math.abs(currentH - initialEnergy) : 0;
   const energyDriftPercent = initialEnergy !== null && initialEnergy !== 0 ? (energyDrift / initialEnergy) * 100 : 0;
-  const isUnstable = energyDriftPercent > 10;
+  const isUnstable = energyDriftPercent > 40; // Very forgiving threshold
 
   // Achievement check
   useEffect(() => {
@@ -355,9 +355,9 @@ const ModuleHMC: React.FC = () => {
     const endX = e.clientX - rect.left;
     const endY = e.clientY - rect.top;
     
-    // Calculate Momentum vector from drag (inverse)
-    const px = (draggingRef.current.startX - endX) * 0.05;
-    const py = (draggingRef.current.startY - endY) * 0.05;
+    // Calculate Momentum vector from drag (inverse) - reduced scaling for stability
+    const px = (draggingRef.current.startX - endX) * 0.025;
+    const py = (draggingRef.current.startY - endY) * 0.025;
 
     // Reset path but keep start pos
     setParticle(prev => ({
@@ -514,6 +514,43 @@ const ModuleHMC: React.FC = () => {
               </div>
             )}
           </div>
+
+          {/* Gentle Launch Button - Easy mode for users */}
+          <button 
+            onClick={() => {
+              if (isSimulating) return;
+              // Give a gentle tangential momentum for smooth orbit
+              const q = particleRef.current.q;
+              const r = Math.sqrt(q.x * q.x + q.y * q.y);
+              // Tangent direction (perpendicular to radial)
+              const tangentX = -q.y / r;
+              const tangentY = q.x / r;
+              // Gentle speed - very conservative for stable orbit
+              const speed = 0.5;
+              const px = tangentX * speed;
+              const py = tangentY * speed;
+              
+              setParticle(prev => ({
+                ...prev,
+                p: { x: px, y: py },
+                path: []
+              }));
+              
+              const initU = potentialEnergy(q.x, q.y);
+              const initK = kineticEnergy(px, py, mass);
+              setInitialEnergy(initU + initK);
+              setEnergyHistory([]);
+              setIsSimulating(true);
+            }}
+            disabled={isSimulating}
+            className="w-full flex items-center justify-center gap-2 py-3 bg-green-600 hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-lg transition-colors shadow-md font-semibold"
+          >
+            <Play size={16} /> Gentle Launch (Easy Mode)
+          </button>
+
+          <p className="text-xs text-center text-[#9a9590]">
+            Or drag on the canvas to set custom momentum
+          </p>
 
           {/* Gradient Toggle */}
           <div className="flex items-center justify-between p-3 bg-[#f5f0e8] rounded-lg border border-[#e8e4df]">

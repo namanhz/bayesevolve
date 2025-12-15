@@ -8,8 +8,8 @@ import MathTex from './Math';
 const ELBO_BAR_WIDTH = 200;
 const ELBO_BAR_HEIGHT = 100;
 
-const WIDTH = 500;
-const HEIGHT = 300;
+const WIDTH = 700;
+const HEIGHT = 400;
 
 // True posterior: mixture of two Gaussians (complex, multimodal)
 const truePosterior = (x: number): number => {
@@ -222,7 +222,46 @@ const ModuleVariational: React.FC = () => {
     ctx.stroke();
     ctx.setLineDash([]);
 
-    // Draw mu marker
+    // Draw optimization path trail if optimizing
+    if (optimizationHistory.length > 1) {
+      ctx.beginPath();
+      ctx.strokeStyle = 'rgba(34, 197, 94, 0.6)';
+      ctx.lineWidth = 2;
+      ctx.setLineDash([4, 2]);
+      
+      for (let i = 0; i < optimizationHistory.length; i++) {
+        const h = optimizationHistory[i];
+        const hY = variationalQ(h.mu, h.mu, h.sigma);
+        const x = toCanvasX(h.mu);
+        const y = toCanvasY(hY);
+        
+        if (i === 0) {
+          ctx.moveTo(x, y);
+        } else {
+          ctx.lineTo(x, y);
+        }
+        
+        // Draw small dots along the path
+        ctx.fillStyle = `rgba(34, 197, 94, ${0.3 + (i / optimizationHistory.length) * 0.7})`;
+        ctx.fillRect(x - 2, y - 2, 4, 4);
+      }
+      ctx.stroke();
+      ctx.setLineDash([]);
+    }
+
+    // Draw mu marker with glow effect when optimizing
+    if (isOptimizing) {
+      // Glow effect
+      ctx.beginPath();
+      ctx.arc(toCanvasX(mu), toCanvasY(variationalQ(mu, mu, sigma)), 16, 0, 2 * Math.PI);
+      ctx.fillStyle = 'rgba(59, 130, 246, 0.2)';
+      ctx.fill();
+      ctx.beginPath();
+      ctx.arc(toCanvasX(mu), toCanvasY(variationalQ(mu, mu, sigma)), 12, 0, 2 * Math.PI);
+      ctx.fillStyle = 'rgba(59, 130, 246, 0.3)';
+      ctx.fill();
+    }
+    
     ctx.beginPath();
     ctx.arc(toCanvasX(mu), toCanvasY(variationalQ(mu, mu, sigma)), 8, 0, 2 * Math.PI);
     ctx.fillStyle = '#3b82f6';
@@ -243,7 +282,7 @@ const ModuleVariational: React.FC = () => {
     ctx.fillStyle = '#4a4540';
     ctx.fillText('Approximation q(θ)', WIDTH - 132, 38);
 
-  }, [mu, sigma]);
+  }, [mu, sigma, optimizationHistory, isOptimizing]);
 
   useEffect(() => {
     render();
@@ -302,7 +341,7 @@ const ModuleVariational: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col h-full space-y-4 overflow-y-auto">
+    <div className="flex flex-col space-y-4">
       {/* Explanation Panel */}
       <div className="bg-white p-6 rounded-xl border border-[#d4cdc4] shadow-sm">
         <h2 className="text-2xl font-bold text-[#1a1a1a] mb-4">{t('vi.title')}</h2>
@@ -344,25 +383,40 @@ const ModuleVariational: React.FC = () => {
       </div>
 
       {/* Interactive Section */}
-      <div className="flex flex-col lg:flex-row gap-6 flex-grow">
+      <div className="flex flex-col lg:flex-row gap-6">
         {/* Canvas */}
-        <div className="flex-1 bg-white p-4 rounded-xl border border-[#d4cdc4] shadow-sm">
+        <div className={`flex-1 bg-white p-4 rounded-xl border-2 shadow-sm transition-all duration-300 ${isOptimizing ? 'border-blue-400 shadow-blue-100 shadow-lg' : 'border-[#d4cdc4]'}`}>
           <div className="flex items-center justify-between mb-3">
             <h3 className="text-lg font-bold text-[#1a1a1a] flex items-center gap-2">
-              <Sparkles size={20} /> {t('vi.distribution_fitting')}
+              <Sparkles size={20} className={isOptimizing ? 'animate-spin' : ''} /> {t('vi.distribution_fitting')}
             </h3>
-            <div className="text-xs font-mono text-[#6b6560] bg-[#f5f0e8] px-2 py-1 rounded">
-              Brown = p(θ|D), Blue = q(θ)
+            <div className="flex items-center gap-2">
+              {isOptimizing && (
+                <span className="text-xs font-bold text-blue-600 bg-blue-100 px-2 py-1 rounded animate-pulse flex items-center gap-1">
+                  <span className="w-2 h-2 bg-blue-500 rounded-full animate-ping"></span>
+                  Optimizing...
+                </span>
+              )}
+              <span className="text-xs font-mono text-[#6b6560] bg-[#f5f0e8] px-2 py-1 rounded">
+                Brown = p(θ|D), Blue = q(θ)
+              </span>
             </div>
           </div>
           
-          <canvas 
-            ref={canvasRef} 
-            width={WIDTH} 
-            height={HEIGHT} 
-            className="rounded border border-[#e8e4df] w-full"
-            style={{ maxWidth: WIDTH }}
-          />
+          <div className={`relative ${isOptimizing ? 'ring-2 ring-blue-300 ring-offset-2 rounded' : ''}`}>
+            <canvas 
+              ref={canvasRef} 
+              width={WIDTH} 
+              height={HEIGHT} 
+              className="rounded border border-[#e8e4df] w-full"
+              style={{ maxWidth: WIDTH }}
+            />
+            {optimizationHistory.length > 0 && (
+              <div className="absolute bottom-2 left-2 bg-white/90 backdrop-blur px-2 py-1 rounded text-xs font-mono text-green-600 border border-green-200">
+                Path: {optimizationHistory.length} steps
+              </div>
+            )}
+          </div>
           
           {/* Parameter Controls */}
           <div className="mt-4 space-y-4">

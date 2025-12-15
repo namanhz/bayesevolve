@@ -286,7 +286,7 @@ const ModuleAnalytical: React.FC = () => {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 flex-grow min-h-[450px]">
         
         {/* --- PANEL 1: PRIOR CONTROLS --- */}
-        <div className="bg-white p-5 rounded-lg border border-[#d4cdc4] flex flex-col relative overflow-hidden shadow-sm">
+        <div className="bg-white p-5 rounded-lg border border-[#d4cdc4] flex flex-col relative shadow-sm">
           {tutorialStep === 1 && (
              <div className="absolute inset-0 z-10 bg-[#1a1a1a]/5 border-2 border-[#1a1a1a] animate-pulse rounded-lg pointer-events-none flex items-start justify-end p-2">
                 <span className="bg-[#1a1a1a] text-[#faf8f5] text-xs font-bold px-2 py-1 rounded">Interactive Zone</span>

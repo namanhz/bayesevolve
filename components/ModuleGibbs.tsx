@@ -7,12 +7,13 @@ import { bivariateNormalPdf } from '../services/mathUtils';
 import { ArrowRight, Lock, Unlock } from 'lucide-react';
 
 // Constants for conditional slice canvas
-const SLICE_WIDTH = 200;
-const SLICE_HEIGHT = 80;
+const SLICE_WIDTH = 400;
+const SLICE_HEIGHT = 100;
 
-const WIDTH = 500;
-const HEIGHT = 500;
-const SCALE = 50;
+// Smaller canvas to fit better without scrolling
+const WIDTH = 450;
+const HEIGHT = 450;
+const SCALE = 45;
 const ORIGIN_X = WIDTH / 2;
 const ORIGIN_Y = HEIGHT / 2;
 
@@ -62,21 +63,41 @@ const ModuleGibbs: React.FC = () => {
       : rho * position.x; // Y | X=x ~ N(rho*x, 1-rho^2)
     const condStd = Math.sqrt(1 - rho * rho);
 
-    // Draw the 1D Gaussian curve
+    // Draw the 1D Gaussian curve with FIXED x-range so curve visually moves
     ctx.beginPath();
     ctx.strokeStyle = '#8b7355';
     ctx.lineWidth = 2;
 
-    const xMin = condMean - 4 * Math.max(condStd, 0.3);
-    const xMax = condMean + 4 * Math.max(condStd, 0.3);
+    // Fixed range from -4 to 4 so the curve moves across the canvas
+    const xMin = -4;
+    const xMax = 4;
     const xRange = xMax - xMin;
+
+    // Draw x-axis ticks
+    ctx.strokeStyle = '#d4cdc4';
+    ctx.lineWidth = 1;
+    for (let tick = -3; tick <= 3; tick++) {
+      const tickX = ((tick - xMin) / xRange) * SLICE_WIDTH;
+      ctx.beginPath();
+      ctx.moveTo(tickX, SLICE_HEIGHT - 10);
+      ctx.lineTo(tickX, SLICE_HEIGHT - 5);
+      ctx.stroke();
+    }
+
+    // Draw curve
+    ctx.beginPath();
+    ctx.strokeStyle = '#8b7355';
+    ctx.lineWidth = 2;
 
     for (let i = 0; i <= SLICE_WIDTH; i++) {
       const x = xMin + (i / SLICE_WIDTH) * xRange;
       // Gaussian PDF
       const pdf = (1 / (condStd * Math.sqrt(2 * Math.PI))) * 
                   Math.exp(-0.5 * Math.pow((x - condMean) / condStd, 2));
-      const y = SLICE_HEIGHT - 10 - pdf * (SLICE_HEIGHT - 20) * condStd * 2;
+      // Scale PDF for visualization (max height around 0.8 of canvas)
+      const maxPdf = 1 / (condStd * Math.sqrt(2 * Math.PI));
+      const normalizedPdf = pdf / maxPdf;
+      const y = SLICE_HEIGHT - 10 - normalizedPdf * (SLICE_HEIGHT - 25);
       
       if (i === 0) ctx.moveTo(i, y);
       else ctx.lineTo(i, y);
@@ -90,7 +111,7 @@ const ModuleGibbs: React.FC = () => {
     ctx.fillStyle = 'rgba(139, 115, 85, 0.2)';
     ctx.fill();
 
-    // Draw mean line
+    // Draw mean line (now it actually moves!)
     const meanX = ((condMean - xMin) / xRange) * SLICE_WIDTH;
     ctx.beginPath();
     ctx.strokeStyle = '#1a1a1a';
@@ -233,8 +254,12 @@ const ModuleGibbs: React.FC = () => {
   useEffect(() => {
     drawContours();
     drawDynamic();
+  }, [drawContours, drawDynamic]);
+
+  // Dedicated effect to update slice canvas when position/turn/rho changes
+  useEffect(() => {
     drawConditionalSlice();
-  }, [drawContours, drawDynamic, drawConditionalSlice]);
+  }, [position, turn, rho, drawConditionalSlice]);
 
 
   const step = useCallback(() => {
@@ -287,12 +312,12 @@ const ModuleGibbs: React.FC = () => {
   }, [isRunning, speed, step]);
 
   return (
-    <div className="flex flex-col lg:flex-row h-full gap-8">
+    <div className="flex flex-col lg:flex-row h-full gap-6">
       <div className="flex-grow flex flex-col justify-center items-center bg-white rounded-xl border border-[#d4cdc4] p-4 shadow-sm">
         <canvas ref={canvasRef} width={WIDTH} height={HEIGHT} className="rounded cursor-crosshair" />
         
         {/* Conditional Slice Visualization */}
-        <div className="mt-4 w-full max-w-[500px]">
+        <div className="mt-4 w-full max-w-[400px]">
           <div className="flex items-center justify-between mb-2">
             <span className="text-xs font-bold text-[#6b6560] uppercase tracking-wider">
               Conditional Distribution (1D Slice)
@@ -305,14 +330,14 @@ const ModuleGibbs: React.FC = () => {
             ref={sliceCanvasRef} 
             width={SLICE_WIDTH} 
             height={SLICE_HEIGHT} 
-            className="w-full rounded border border-[#d4cdc4]"
-            style={{ maxWidth: SLICE_WIDTH * 2.5, height: 'auto' }}
+            className="rounded border border-[#d4cdc4]"
+            style={{ width: SLICE_WIDTH, height: SLICE_HEIGHT }}
           />
         </div>
       </div>
 
-      <div className="w-full lg:w-1/3 flex flex-col space-y-6">
-        <div className="bg-white p-6 rounded-xl border border-[#d4cdc4] shadow-sm">
+      <div className="w-full lg:w-96 flex flex-col space-y-4 overflow-y-auto max-h-[calc(100vh-120px)]">
+        <div className="bg-white p-5 rounded-xl border border-[#d4cdc4] shadow-sm">
            <h2 className="text-2xl font-bold text-[#1a1a1a] mb-4">{t('gibbs.title')}</h2>
            
            <div className="space-y-4 mb-4">
@@ -353,7 +378,7 @@ const ModuleGibbs: React.FC = () => {
            </div>
         </div>
 
-        <div className="bg-white p-6 rounded-xl border border-[#d4cdc4] shadow-sm space-y-6">
+        <div className="bg-white p-4 rounded-xl border border-[#d4cdc4] shadow-sm space-y-4">
            <div>
                <label className="text-sm text-[#6b6560] font-bold block mb-2">{t('gibbs.correlation')} (ρ): <span className="font-mono">{rho}</span></label>
                <input 
@@ -364,103 +389,68 @@ const ModuleGibbs: React.FC = () => {
                  }}
                  className="w-full accent-[#1a1a1a] h-2 bg-[#d4cdc4] rounded-lg appearance-none cursor-pointer"
                />
-               <p className="text-xs text-[#9a9590] mt-2">
-                 {t('gibbs.try_hint')}
-               </p>
            </div>
 
-           {/* Correlation Metrics Panel */}
-           <div className={`p-4 rounded-lg border-2 ${correlationWarning ? 'border-amber-300 bg-amber-50' : 'border-[#e8e4df] bg-[#faf8f5]'}`}>
-             <div className="flex items-center gap-2 mb-3">
-               {correlationWarning && <AlertTriangle className="text-amber-500" size={16} />}
-               <span className="text-xs font-bold text-[#6b6560] uppercase tracking-wider">Mixing Diagnostics</span>
+           {/* Mixing Diagnostics - Compact */}
+           <div className={`p-3 rounded-lg border ${correlationWarning ? 'border-amber-300 bg-amber-50' : 'border-[#e8e4df] bg-[#faf8f5]'}`}>
+             <div className="flex items-center gap-2 mb-2">
+               {correlationWarning && <AlertTriangle className="text-amber-500" size={14} />}
+               <span className="text-xs font-bold text-[#6b6560] uppercase">Diagnostics</span>
+               <span className="text-xs text-[#9a9590] ml-auto">{history.length} samples</span>
              </div>
-             <div className="grid grid-cols-2 gap-3 text-xs font-mono">
+             <div className="grid grid-cols-2 gap-2 text-xs font-mono">
                <div>
-                 <span className="text-[#9a9590]">Cond. Var σ²(1-ρ²):</span>
-                 <div className={`font-bold ${conditionalVariance < 0.1 ? 'text-red-500' : 'text-[#1a1a1a]'}`}>
-                   {conditionalVariance.toFixed(4)}
-                 </div>
-               </div>
-               <div>
-                 <span className="text-[#9a9590]">Cond. Std:</span>
-                 <div className={`font-bold ${conditionalStd < 0.3 ? 'text-red-500' : 'text-[#1a1a1a]'}`}>
-                   {conditionalStd.toFixed(4)}
-                 </div>
-               </div>
-               <div>
-                 <span className="text-[#9a9590]">~Steps to mix:</span>
-                 <div className={`font-bold ${mixingTime > 50 ? 'text-red-500' : mixingTime > 10 ? 'text-amber-500' : 'text-green-600'}`}>
-                   {mixingTime === Infinity ? '∞' : mixingTime}
-                 </div>
-               </div>
-               <div>
-                 <span className="text-[#9a9590]">Samples:</span>
-                 <div className="font-bold text-[#1a1a1a]">{history.length}</div>
-               </div>
-             </div>
-             {correlationWarning && (
-               <div className="mt-3 text-xs text-amber-700 bg-amber-100 p-2 rounded">
-                 ⚠️ High ρ = narrow conditionals = slow mixing. Chain moves in tiny steps along the diagonal!
-               </div>
-             )}
-           </div>
-
-           <div className="p-4 bg-[#f5f0e8] rounded-lg border border-[#e8e4df] flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                 <Lock className="text-[#6b5640]" size={18} />
-                 <span className="text-[#1a1a1a] font-mono text-sm">
-                    {turn === 'X' ? `x₂ ${t('gibbs.fixed')}` : `x₁ ${t('gibbs.fixed')}`}
+                 <span className="text-[#9a9590]">Var:</span>
+                 <span className={`ml-1 font-bold ${conditionalVariance < 0.1 ? 'text-red-500' : 'text-[#1a1a1a]'}`}>
+                   {conditionalVariance.toFixed(3)}
                  </span>
-              </div>
-              <ArrowRight className="text-[#9a9590]" />
-              <div className="text-[#1a1a1a] font-mono font-bold flex items-center gap-2">
-                 <Unlock size={18} /> {t('gibbs.sample')} {turn === 'X' ? 'x₁' : 'x₂'}
-              </div>
+               </div>
+               <div>
+                 <span className="text-[#9a9590]">Mix:</span>
+                 <span className={`ml-1 font-bold ${mixingTime > 50 ? 'text-red-500' : mixingTime > 10 ? 'text-amber-500' : 'text-green-600'}`}>
+                   {mixingTime === Infinity ? '∞' : mixingTime}
+                 </span>
+               </div>
+             </div>
            </div>
 
-           {/* Manual Mode - Blue Theme */}
-           <div className="border-2 border-blue-200 bg-blue-50 p-4 rounded-lg">
-             <div className="flex items-center gap-2 mb-3">
-               <div className="w-3 h-3 rounded-full bg-blue-500"></div>
-               <span className="text-sm font-bold text-blue-700 uppercase tracking-wider">{t('mh.manual_mode')}</span>
-             </div>
+           <div className="p-3 bg-[#f5f0e8] rounded-lg border border-[#e8e4df] flex items-center justify-between text-xs">
+              <div className="flex items-center gap-2">
+                 <Lock className="text-[#6b5640]" size={14} />
+                 <span className="font-mono">{turn === 'X' ? `x₂=${position.y.toFixed(2)}` : `x₁=${position.x.toFixed(2)}`}</span>
+              </div>
+              <ArrowRight className="text-[#9a9590]" size={14} />
+              <span className="font-bold">Sample {turn === 'X' ? 'x₁' : 'x₂'}</span>
+           </div>
+
+           {/* Controls */}
+           <div className="flex items-center gap-2">
              <button 
                onClick={step}
                disabled={isRunning}
-               className="w-full py-3 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white font-bold rounded-lg shadow-md transition-all active:scale-95"
+               className="flex-1 py-2 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white font-bold rounded-lg text-sm"
              >
-               {t('gibbs.take_step')} {turn === 'X' ? 'x₁' : 'x₂'} | {turn === 'X' ? 'x₂' : 'x₁'}
+               Step
+             </button>
+             <button 
+               onClick={() => setIsRunning(!isRunning)} 
+               className={`p-2 rounded-lg ${isRunning ? 'bg-red-500 hover:bg-red-600' : 'bg-green-600 hover:bg-green-700'} text-white`}
+             >
+               {isRunning ? <Pause size={18} /> : <Play size={18} />}
+             </button>
+             <select 
+               value={speed} 
+               onChange={(e) => setSpeed(Number(e.target.value))}
+               className="px-2 py-2 rounded-lg border border-[#d4cdc4] text-sm bg-white"
+             >
+               <option value={1}>1x</option>
+               <option value={2}>5x</option>
+               <option value={3}>50x</option>
+             </select>
+             <button onClick={reset} className="p-2 text-[#6b6560] hover:bg-[#f5f0e8] rounded-lg">
+               <RotateCcw size={18} />
              </button>
            </div>
-
-           {/* Auto Mode - Green Theme */}
-           <div className="border-2 border-green-200 bg-green-50 p-4 rounded-lg">
-             <div className="flex items-center gap-2 mb-3">
-               <div className="w-3 h-3 rounded-full bg-green-500"></div>
-               <span className="text-sm font-bold text-green-700 uppercase tracking-wider">{t('mh.auto_mode')}</span>
-             </div>
-             <div className="flex items-center gap-4">
-               <button 
-                 onClick={() => setIsRunning(!isRunning)} 
-                 className={`p-3 rounded-full shadow-md transition-all active:scale-95 ${isRunning ? 'bg-red-500 hover:bg-red-600' : 'bg-green-600 hover:bg-green-700'} text-white`}
-               >
-                 {isRunning ? <Pause size={20} /> : <Play size={20} />}
-               </button>
-               <div className="flex-1">
-                 <label className="text-xs text-green-700 font-medium">Speed: {speed === 1 ? '1x' : speed === 2 ? '5x' : '50x'}</label>
-                 <input 
-                   type="range" min="1" max="3" step="1" 
-                   value={speed} onChange={(e) => setSpeed(Number(e.target.value))}
-                   className="w-full mt-1 accent-green-600 h-2 bg-green-200 rounded-lg appearance-none cursor-pointer"
-                 />
-               </div>
-             </div>
-           </div>
-           
-           <button onClick={reset} className="w-full text-[#9a9590] hover:text-[#4a4540] text-sm py-2">
-               {t('gibbs.reset_sampler')}
-           </button>
         </div>
       </div>
     </div>

@@ -5,9 +5,9 @@ import { useProgress } from '../contexts/ProgressContext';
 import { useLanguage } from '../contexts/LanguageContext';
 import MathTex from './Math';
 
-const WIDTH = 600;
-const HEIGHT = 600;
-const SCALE = 60; // Pixels per unit
+const WIDTH = 700;
+const HEIGHT = 700;
+const SCALE = 70; // Pixels per unit
 
 const ModuleMetropolis: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
