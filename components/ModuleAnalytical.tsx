@@ -140,21 +140,21 @@ const ModuleAnalytical: React.FC = () => {
           title: "Beta-Binomial Conjugacy",
           subtitle: "Closed-form posterior for Bernoulli trials",
           technical: "The Beta distribution is conjugate to the Binomial likelihood. If θ ~ Beta(α,β) and we observe k successes in n trials, the posterior is θ|D ~ Beta(α+k, β+n-k). The normalizing constant B(α,β) = Γ(α)Γ(β)/Γ(α+β) is known analytically.",
-          eli5: "🎯 ELI5: You have a coin. Before flipping, you guess how biased it might be (the curve). After each flip, the curve shifts toward what you observed. More flips = narrower curve = more certainty."
+          eli5: "The posterior concentrates around the maximum likelihood estimate as sample size increases, with variance decreasing proportionally to 1/n. Conjugacy enables exact Bayesian updating without numerical integration."
         };
       case AnalyticalMode.NORMAL_NORMAL:
         return {
           title: "Normal-Normal Conjugacy",
           subtitle: "Precision-weighted averaging",
           technical: "With prior μ ~ N(μ₀, σ₀²) and likelihood x|μ ~ N(μ, σ²), the posterior is μ|D ~ N(μₙ, σₙ²) where μₙ = (μ₀/σ₀² + nx̄/σ²) / (1/σ₀² + n/σ²). The posterior mean is a precision-weighted average of prior and data means.",
-          eli5: "🎯 ELI5: You think the temperature is 20°C. The sensor says 25°C. Who do you trust more? The answer depends on how confident each source is. More confident = more weight."
+          eli5: "The posterior mean is a precision-weighted combination of prior belief and observed data. Higher precision (lower variance) sources receive proportionally greater weight in the final estimate."
         };
       case AnalyticalMode.GAMMA_POISSON:
         return {
           title: "Gamma-Poisson Conjugacy",
           subtitle: "Rate estimation for count data",
           technical: "With prior λ ~ Gamma(α,β) and likelihood k|λ ~ Poisson(λT), the posterior is λ|D ~ Gamma(α+Σk, β+T). We add observed events to the shape parameter and observation time to the rate parameter.",
-          eli5: "🎯 ELI5: You're counting buses. Each hour you wait, you update your guess about how many come per hour. More waiting = better estimate of the true rate."
+          eli5: "Conjugate updating accumulates sufficient statistics: total event count increases the shape parameter while total observation time increases the rate parameter, naturally encoding uncertainty reduction."
         };
     }
   };
