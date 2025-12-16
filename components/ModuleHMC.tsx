@@ -350,8 +350,11 @@ const ModuleHMC: React.FC = () => {
           setSamples(s => [...s, { ...particleRef.current.q }]);
           
           if (isAutoMode) {
-            // In auto mode: resample momentum and continue
+            // In auto mode: resample momentum and restart timer by toggling simulation
             resampleMomentum();
+            // Briefly toggle to restart the effect and create new timer
+            setIsSimulating(false);
+            setTimeout(() => setIsSimulating(true), 10);
           } else {
             // In manual mode: stop simulation
             setIsSimulating(false);
