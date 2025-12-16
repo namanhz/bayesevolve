@@ -59,6 +59,7 @@ const ModuleHMC: React.FC = () => {
   const [showGradient, setShowGradient] = useState(true);
   const [energyHistory, setEnergyHistory] = useState<{U: number, K: number, H: number}[]>([]);
   const [initialEnergy, setInitialEnergy] = useState<number | null>(null);
+  const [isAutoMode, setIsAutoMode] = useState(false); // Auto mode for continuous sampling
   
   // Keep ref in sync with state
   useEffect(() => {
@@ -309,6 +310,32 @@ const ModuleHMC: React.FC = () => {
     });
   }, [dt]);
 
+  // Function to resample momentum (for auto mode)
+  const resampleMomentum = useCallback(() => {
+    const q = particleRef.current.q;
+    const r = Math.sqrt(q.x * q.x + q.y * q.y);
+    if (r === 0) return;
+    
+    // Tangent direction with random sign for variety
+    const sign = Math.random() > 0.5 ? 1 : -1;
+    const tangentX = sign * (-q.y / r);
+    const tangentY = sign * (q.x / r);
+    const speed = 0.8 + Math.random() * 0.8; // Random speed between 0.8 and 1.6
+    const px = tangentX * speed;
+    const py = tangentY * speed;
+    
+    setParticle(prev => ({
+      ...prev,
+      p: { x: px, y: py },
+      path: []
+    }));
+    
+    const initU = potentialEnergy(q.x, q.y);
+    const initK = kineticEnergy(px, py, mass);
+    setInitialEnergy(initU + initK);
+    setEnergyHistory([]);
+  }, []);
+
   useEffect(() => {
     if (isSimulating) {
       const loop = () => {
@@ -319,10 +346,17 @@ const ModuleHMC: React.FC = () => {
       
       // Stop automatically after some time to simulate a "sample" being taken
       const timer = setTimeout(() => {
-          setIsSimulating(false);
-          if (requestRef.current) cancelAnimationFrame(requestRef.current);
-          // Use ref to get current position without causing dependency loop
+          // Take a sample
           setSamples(s => [...s, { ...particleRef.current.q }]);
+          
+          if (isAutoMode) {
+            // In auto mode: resample momentum and continue
+            resampleMomentum();
+          } else {
+            // In manual mode: stop simulation
+            setIsSimulating(false);
+            if (requestRef.current) cancelAnimationFrame(requestRef.current);
+          }
       }, 3000);
       
       return () => {
@@ -330,7 +364,7 @@ const ModuleHMC: React.FC = () => {
           clearTimeout(timer);
       };
     }
-  }, [isSimulating, stepPhysics]);
+  }, [isSimulating, stepPhysics, isAutoMode, resampleMomentum]);
 
   const handleMouseDown = (e: React.MouseEvent) => {
     if(isSimulating) return;
@@ -516,40 +550,68 @@ const ModuleHMC: React.FC = () => {
             )}
           </div>
 
-          {/* Gentle Launch Button - Easy mode for users */}
-          <button 
-            onClick={() => {
-              if (isSimulating) return;
-              // Give a gentle tangential momentum for smooth orbit
-              const q = particleRef.current.q;
-              const r = Math.sqrt(q.x * q.x + q.y * q.y);
-              // Tangent direction (perpendicular to radial)
-              const tangentX = -q.y / r;
-              const tangentY = q.x / r;
-              // For a particle on the ring (r≈R), give enough momentum for a nice orbit
-              // With U = 0.5*(r-R)^2 and starting at r=R, potential is ~0
-              // A moderate kinetic energy creates smooth oscillating trajectories
-              const speed = 1.2;  // Increased for visible, stable motion
-              const px = tangentX * speed;
-              const py = tangentY * speed;
-              
-              setParticle(prev => ({
-                ...prev,
-                p: { x: px, y: py },
-                path: []
-              }));
-              
-              const initU = potentialEnergy(q.x, q.y);
-              const initK = kineticEnergy(px, py, mass);
-              setInitialEnergy(initU + initK);
-              setEnergyHistory([]);
-              setIsSimulating(true);
-            }}
-            disabled={isSimulating}
-            className="w-full flex items-center justify-center gap-2 py-3 bg-green-600 hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-lg transition-colors shadow-md font-semibold"
-          >
-            <Play size={16} /> Gentle Launch (Easy Mode)
-          </button>
+          {/* Auto Mode Toggle */}
+          <div className="border-2 border-green-200 bg-green-50 p-4 rounded-lg">
+            <div className="flex items-center gap-2 mb-3">
+              <div className="w-3 h-3 rounded-full bg-green-500"></div>
+              <span className="text-sm font-bold text-green-700 uppercase tracking-wider">Auto Mode</span>
+            </div>
+            <div className="flex items-center justify-between mb-3">
+              <span className="text-sm text-green-700">Continuous sampling</span>
+              <button
+                onClick={() => setIsAutoMode(!isAutoMode)}
+                className={`w-12 h-6 rounded-full transition-colors ${isAutoMode ? 'bg-green-500' : 'bg-gray-300'}`}
+              >
+                <div className={`w-5 h-5 bg-white rounded-full shadow transform transition-transform ${isAutoMode ? 'translate-x-6' : 'translate-x-0.5'}`} />
+              </button>
+            </div>
+            <button 
+              onClick={() => {
+                if (isSimulating && isAutoMode) {
+                  // Stop auto mode
+                  setIsSimulating(false);
+                  if (requestRef.current) cancelAnimationFrame(requestRef.current);
+                } else if (!isSimulating) {
+                  // Start with gentle launch
+                  const q = particleRef.current.q;
+                  const r = Math.sqrt(q.x * q.x + q.y * q.y);
+                  const tangentX = -q.y / r;
+                  const tangentY = q.x / r;
+                  const speed = 1.2;
+                  const px = tangentX * speed;
+                  const py = tangentY * speed;
+                  
+                  setParticle(prev => ({
+                    ...prev,
+                    p: { x: px, y: py },
+                    path: []
+                  }));
+                  
+                  const initU = potentialEnergy(q.x, q.y);
+                  const initK = kineticEnergy(px, py, mass);
+                  setInitialEnergy(initU + initK);
+                  setEnergyHistory([]);
+                  setIsSimulating(true);
+                }
+              }}
+              className={`w-full flex items-center justify-center gap-2 py-3 rounded-lg transition-colors shadow-md font-semibold ${
+                isSimulating && isAutoMode 
+                  ? 'bg-red-500 hover:bg-red-600 text-white' 
+                  : 'bg-green-600 hover:bg-green-700 text-white'
+              }`}
+            >
+              {isSimulating && isAutoMode ? (
+                <><Pause size={16} /> Stop Auto</>
+              ) : (
+                <><Play size={16} /> {isAutoMode ? 'Start Auto' : 'Launch'}</>
+              )}
+            </button>
+            {isAutoMode && (
+              <p className="text-xs text-green-600 mt-2 text-center">
+                Will resample momentum every 3s and continue
+              </p>
+            )}
+          </div>
 
           <p className="text-xs text-center text-[#9a9590]">
             Or drag on the canvas to set custom momentum
