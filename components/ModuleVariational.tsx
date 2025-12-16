@@ -558,6 +558,10 @@ const ModuleVariational: React.FC = () => {
                 <li>{t('vi.hint4')}</li>
               </ol>
             </div>
+            
+            <div className="mt-4 pt-3 border-t border-[#e8e4df] text-[10px] text-[#9a9590] text-center">
+              <span className="italic">References: Kullback & Leibler (1951), Blei et al. (2017)</span>
+            </div>
           </div>
         </div>
       </div>

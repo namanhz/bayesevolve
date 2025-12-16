@@ -451,6 +451,10 @@ const ModuleGibbs: React.FC = () => {
                <RotateCcw size={18} />
              </button>
            </div>
+           
+           <div className="pt-3 border-t border-[#e8e4df] text-[10px] text-[#9a9590] text-center">
+             <span className="italic">References: Geman & Geman (1984), Box & Muller (1958)</span>
+           </div>
         </div>
       </div>
     </div>

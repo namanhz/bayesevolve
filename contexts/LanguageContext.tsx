@@ -21,7 +21,7 @@ const translations: Record<Language, Record<string, string>> = {
     'nav.variational': '5. Scalable Era (VI)',
     'achievements': 'Achievements',
     'footer': 'Inspired by Prof Kerrie Mengersen\'s Bayesian lectures in Hanoi (2025), developed by Nam Anh Le',
-    'footer_dev_note': 'Algorithms based on Metropolis et al. (1953), Geman & Geman (1984), Neal (2011), and Blei et al. (2017). Web interface implemented with the assistance of AI coding tools.',
+    'footer_dev_note': 'Algorithms: Bayes (1763), Raiffa & Schlaifer (1961), Metropolis et al. (1953), Geman & Geman (1984), Neal (2011), Blei et al. (2017). UI built with AI assistance.',
     
     // Common
     'the_problem': 'The Problem',
@@ -142,7 +142,7 @@ const translations: Record<Language, Record<string, string>> = {
     'nav.variational': '5. Mở rộng (VI)',
     'achievements': 'Thành tựu',
     'footer': 'Lấy cảm hứng từ bài giảng Bayes của GS Kerrie Mengersen tại Hà Nội (2025), phát triển bởi Lê Nam Anh',
-    'footer_dev_note': 'Thuật toán dựa trên Metropolis et al. (1953), Geman & Geman (1984), Neal (2011), và Blei et al. (2017). Giao diện web được triển khai với sự hỗ trợ của công cụ AI.',
+    'footer_dev_note': 'Thuật toán: Bayes (1763), Raiffa & Schlaifer (1961), Metropolis et al. (1953), Geman & Geman (1984), Neal (2011), Blei et al. (2017). Giao diện được xây dựng với sự hỗ trợ của AI.',
     
     // Common
     'the_problem': 'Vấn đề',

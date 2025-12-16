@@ -456,6 +456,10 @@ const ModuleMetropolis: React.FC = () => {
           <button onClick={reset} className="w-full text-[#9a9590] hover:text-[#4a4540] text-sm flex items-center justify-center gap-2 py-2">
             <RotateCcw size={14} /> {t('mh.reset_sampler')}
           </button>
+          
+          <div className="pt-3 border-t border-[#e8e4df] text-[10px] text-[#9a9590] text-center">
+            <span className="italic">References: Metropolis et al. (1953), Hastings (1970)</span>
+          </div>
         </div>
       </div>
     </div>

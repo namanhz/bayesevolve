@@ -684,11 +684,19 @@ MIT License
 
 The algorithms and equations implemented in this application are based on the following foundational works:
 
+- **Bayesian Inference** — Bayes, T. (1763). *An Essay towards solving a Problem in the Doctrine of Chances*. Philosophical Transactions of the Royal Society. Formalized and extended by Laplace, P.S. (1774).
+
+- **Conjugate Prior Theory** — Raiffa, H. & Schlaifer, R. (1961). *Applied Statistical Decision Theory*. Harvard Business School. Systematized the theory of conjugate prior families (Beta-Binomial, Normal-Normal, Gamma-Poisson).
+
 - **Metropolis-Hastings Algorithm** — Metropolis, N., Rosenbluth, A.W., Rosenbluth, M.N., Teller, A.H., & Teller, E. (1953). *Equation of State Calculations by Fast Computing Machines*. The Journal of Chemical Physics, 21(6), 1087-1092. Extended by Hastings, W.K. (1970).
 
 - **Gibbs Sampling** — Geman, S., & Geman, D. (1984). *Stochastic Relaxation, Gibbs Distributions, and the Bayesian Restoration of Images*. IEEE Transactions on Pattern Analysis and Machine Intelligence, 6(6), 721-741.
 
+- **Box-Muller Transform** — Box, G.E.P. & Muller, M.E. (1958). *A Note on the Generation of Random Normal Deviates*. The Annals of Mathematical Statistics, 29(2), 610-611. Used for Gaussian sampling in the Gibbs module.
+
 - **Hamiltonian Monte Carlo** — Neal, R.M. (2011). *MCMC Using Hamiltonian Dynamics*. Handbook of Markov Chain Monte Carlo, Chapter 5. The Leapfrog integrator implementation follows the Störmer-Verlet scheme as described in this work.
+
+- **KL Divergence** — Kullback, S. & Leibler, R.A. (1951). *On Information and Sufficiency*. The Annals of Mathematical Statistics, 22(1), 79-86.
 
 - **Variational Inference & ELBO** — Blei, D.M., Kucukelbir, A., & McAuliffe, J.D. (2017). *Variational Inference: A Review for Statisticians*. Journal of the American Statistical Association, 112(518), 859-877.
 

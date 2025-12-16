@@ -471,6 +471,9 @@ const ModuleAnalytical: React.FC = () => {
                {mode === AnalyticalMode.GAMMA_POISSON && "Posterior shape = α + Σk, posterior rate = β + T."}
             </span>
           </div>
+          <div className="mt-4 pt-3 border-t border-[#e8e4df] text-[10px] text-[#9a9590] text-center">
+            <span className="italic">References: Bayes (1763), Laplace (1774), Raiffa & Schlaifer (1961)</span>
+          </div>
         </div>
       </div>
     </div>
