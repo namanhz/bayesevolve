@@ -14,16 +14,14 @@
 ## Table of Contents
 
 1. [Overview](#overview)
-2. [Getting Started](#getting-started)
-3. [Architecture](#architecture)
-4. [Era 1: Analytical Era (Conjugate Priors)](#era-1-analytical-era)
-5. [Era 2: Simulation Revolution (Metropolis-Hastings)](#era-2-simulation-revolution)
-6. [Era 3: Component-Wise Era (Gibbs Sampling)](#era-3-component-wise-era)
-7. [Era 4: Geometric Era (Hamiltonian Monte Carlo)](#era-4-geometric-era)
-8. [Era 5: Scalable Era (Variational Inference)](#era-5-scalable-era)
-9. [Mathematical Utilities](#mathematical-utilities)
-10. [Internationalization](#internationalization)
-11. [Deployment](#deployment)
+2. [Architecture](#architecture)
+3. [Era 1: Analytical Era (Conjugate Priors)](#era-1-analytical-era)
+4. [Era 2: Simulation Revolution (Metropolis-Hastings)](#era-2-simulation-revolution)
+5. [Era 3: Component-Wise Era (Gibbs Sampling)](#era-3-component-wise-era)
+6. [Era 4: Geometric Era (Hamiltonian Monte Carlo)](#era-4-geometric-era)
+7. [Era 5: Scalable Era (Variational Inference)](#era-5-scalable-era)
+8. [Mathematical Utilities](#mathematical-utilities)
+9. [Internationalization](#internationalization)
 
 ---
 
@@ -54,36 +52,6 @@ BayesEvolve is an interactive educational web application that teaches the histo
 
 ---
 
-## Getting Started
-
-### Prerequisites
-
-- Node.js 18+ 
-- npm or yarn
-
-### Installation
-
-```bash
-# Clone the repository
-git clone https://github.com/namanhz/bayesevolve.git
-cd bayesevolve
-
-# Install dependencies
-npm install
-
-# Start development server
-npm run dev
-
-# Build for production
-npm run build
-
-# Preview production build
-npm run preview
-```
-
-The app will be available at `http://localhost:5173`
-
----
 
 ## Architecture
 
@@ -645,26 +613,6 @@ const translations: Record<Language, Record<string, string>> = {
   }
 };
 ```
-
----
-
-## Deployment
-
-### Vercel (Recommended)
-
-1. Connect GitHub repository to Vercel
-2. Framework preset: **Vite**
-3. Build command: `npm run build`
-4. Output directory: `dist`
-
-### Custom Domain
-
-To use a custom domain like `bayesevolve.org`:
-
-1. Add domain in Vercel project settings
-2. Set nameservers at your registrar:
-   - `ns1.vercel-dns.com`
-   - `ns2.vercel-dns.com`
 
 ---
 
