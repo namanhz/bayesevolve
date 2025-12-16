@@ -304,7 +304,7 @@ const ModuleMetropolis: React.FC = () => {
       </div>
 
       {/* Right Side - Description & Controls */}
-      <div className="w-full lg:w-1/3 flex flex-col space-y-4">
+      <div className="w-full lg:w-1/3 flex flex-col space-y-4 overflow-y-auto max-h-[calc(100vh-120px)]">
         <div className="bg-white p-4 rounded-xl border border-[#d4cdc4] shadow-sm">
           <h2 className="text-xl font-bold text-[#1a1a1a] mb-3">{t('mh.title')}</h2>
           

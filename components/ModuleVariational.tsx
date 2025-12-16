@@ -341,7 +341,7 @@ const ModuleVariational: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col space-y-4">
+    <div className="flex flex-col space-y-4 h-full overflow-y-auto">
       {/* Explanation Panel */}
       <div className="bg-white p-6 rounded-xl border border-[#d4cdc4] shadow-sm">
         <h2 className="text-2xl font-bold text-[#1a1a1a] mb-4">{t('vi.title')}</h2>

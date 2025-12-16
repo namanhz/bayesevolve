@@ -442,7 +442,7 @@ const ModuleHMC: React.FC = () => {
       </div>
 
       {/* Right Side - Description & Controls */}
-      <div className="w-full lg:w-1/3 flex flex-col space-y-6">
+      <div className="w-full lg:w-1/3 flex flex-col space-y-6 overflow-y-auto max-h-[calc(100vh-120px)]">
         <div className="bg-white p-6 rounded-xl border border-[#d4cdc4] shadow-sm">
           <h2 className="text-2xl font-bold text-[#1a1a1a] mb-4">{t('hmc.title')}</h2>
           
