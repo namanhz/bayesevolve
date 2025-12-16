@@ -21,7 +21,7 @@ const translations: Record<Language, Record<string, string>> = {
     'nav.variational': '5. Scalable Era (VI)',
     'achievements': 'Achievements',
     'footer': 'Inspired by Prof Kerrie Mengersen\'s Bayesian lectures in Hanoi (2025), developed by Nam Anh Le',
-    'footer_dev_note': 'The mathematical logic and algorithms (MCMC, HMC) were synthesized from Prof. Kerrie Mengersen\'s lectures and independent research. The web interface and interactive visualizations were implemented with the assistance of AI coding tools.',
+    'footer_dev_note': 'Algorithms based on Metropolis et al. (1953), Geman & Geman (1984), Neal (2011), and Blei et al. (2017). Web interface implemented with the assistance of AI coding tools.',
     
     // Common
     'the_problem': 'The Problem',
@@ -142,7 +142,7 @@ const translations: Record<Language, Record<string, string>> = {
     'nav.variational': '5. Mở rộng (VI)',
     'achievements': 'Thành tựu',
     'footer': 'Lấy cảm hứng từ bài giảng Bayes của GS Kerrie Mengersen tại Hà Nội (2025), phát triển bởi Lê Nam Anh',
-    'footer_dev_note': 'Logic toán học và thuật toán (MCMC, HMC) được tổng hợp từ bài giảng của GS. Kerrie Mengersen và nghiên cứu độc lập. Giao diện web và trực quan hóa tương tác được triển khai với sự hỗ trợ của công cụ AI.',
+    'footer_dev_note': 'Thuật toán dựa trên Metropolis et al. (1953), Geman & Geman (1984), Neal (2011), và Blei et al. (2017). Giao diện web được triển khai với sự hỗ trợ của công cụ AI.',
     
     // Common
     'the_problem': 'Vấn đề',

@@ -676,14 +676,29 @@ MIT License
 
 ## Acknowledgments
 
-- **Prof Kerrie Mengersen** for the inspiring Bayesian lectures in Hanoi (2025)
-- **Stan Development Team** for pedagogical materials on HMC
-- **David Blei** for foundational work on variational inference
+### Inspiration & Teaching
 
-### Development Note
+- **Prof Kerrie Mengersen** (Queensland University of Technology) — This project was inspired by her Bayesian computation lectures delivered in Hanoi (2025). Her pedagogical approach to explaining MCMC methods and their historical evolution forms the conceptual backbone of this application.
 
-The mathematical logic and algorithms (MCMC, HMC) were synthesized from Prof. Kerrie Mengersen's lectures and independent research. The web interface and interactive visualizations were implemented with the assistance of AI coding tools.
+### Mathematical Foundations & Algorithm References
+
+The algorithms and equations implemented in this application are based on the following foundational works:
+
+- **Metropolis-Hastings Algorithm** — Metropolis, N., Rosenbluth, A.W., Rosenbluth, M.N., Teller, A.H., & Teller, E. (1953). *Equation of State Calculations by Fast Computing Machines*. The Journal of Chemical Physics, 21(6), 1087-1092. Extended by Hastings, W.K. (1970).
+
+- **Gibbs Sampling** — Geman, S., & Geman, D. (1984). *Stochastic Relaxation, Gibbs Distributions, and the Bayesian Restoration of Images*. IEEE Transactions on Pattern Analysis and Machine Intelligence, 6(6), 721-741.
+
+- **Hamiltonian Monte Carlo** — Neal, R.M. (2011). *MCMC Using Hamiltonian Dynamics*. Handbook of Markov Chain Monte Carlo, Chapter 5. The Leapfrog integrator implementation follows the Störmer-Verlet scheme as described in this work.
+
+- **Variational Inference & ELBO** — Blei, D.M., Kucukelbir, A., & McAuliffe, J.D. (2017). *Variational Inference: A Review for Statisticians*. Journal of the American Statistical Association, 112(518), 859-877.
+
+- **Stan Development Team** — For their excellent documentation on HMC tuning, mass matrix adaptation, and numerical stability considerations.
+
+### Development
+
+The mathematical logic and algorithms (MCMC, Gibbs, HMC, Variational Inference) were synthesized from Prof. Kerrie Mengersen's lectures, the references above, and independent research. The web interface and interactive visualizations were implemented with the assistance of AI coding tools (Windsurf/Cascade).
 
 ---
 
+*Developed by Nam Anh Le*  
 *Last Updated: December 2025*

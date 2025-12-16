@@ -22,10 +22,11 @@ interface Particle {
 }
 
 // Potential energy function (donut)
+// U(q) = 0.5 * (r - R)^2 — matches the gradient in mathUtils.ts
 const potentialEnergy = (x: number, y: number) => {
   const R = 5; // Donut radius
   const r = Math.sqrt(x * x + y * y);
-  return Math.pow(r - R, 2);
+  return 0.5 * Math.pow(r - R, 2);
 };
 
 // Kinetic energy
@@ -41,7 +42,7 @@ const ModuleHMC: React.FC = () => {
   const energyCanvasRef = useRef<HTMLCanvasElement>(null);
   const { t } = useLanguage();
   const [particle, setParticle] = useState<Particle>({
-    q: { x: 3, y: 0 },
+    q: { x: 5, y: 0 },  // Start ON the ring (r=R=5) for stable orbits
     p: { x: 0, y: 0 },
     path: []
   });
@@ -525,8 +526,10 @@ const ModuleHMC: React.FC = () => {
               // Tangent direction (perpendicular to radial)
               const tangentX = -q.y / r;
               const tangentY = q.x / r;
-              // Gentle speed - very conservative for stable orbit
-              const speed = 0.5;
+              // For a particle on the ring (r≈R), give enough momentum for a nice orbit
+              // With U = 0.5*(r-R)^2 and starting at r=R, potential is ~0
+              // A moderate kinetic energy creates smooth oscillating trajectories
+              const speed = 1.2;  // Increased for visible, stable motion
               const px = tangentX * speed;
               const py = tangentY * speed;
               
@@ -568,7 +571,7 @@ const ModuleHMC: React.FC = () => {
               setIsSimulating(false);
               if (requestRef.current) cancelAnimationFrame(requestRef.current);
               setSamples([]);
-              setParticle({ q: { x: 3, y: 0 }, p: { x: 0, y: 0 }, path: [] });
+              setParticle({ q: { x: 5, y: 0 }, p: { x: 0, y: 0 }, path: [] });
               setEnergyHistory([]);
               setInitialEnergy(null);
             }}
